@@ -2,11 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
-      tools:context="com.example.prora.demonoteandroid.EditNoteActivity">
+      tools:context="com.example.prora.demonoteandroid.MPVEditNote.EditNoteActivity">
     <item
         android:id="@+id/action_save"
         android:orderInCategory="100"
         android:title="@string/save"
         app:showAsAction="always"
         android:icon="@drawable/save"/>
+
 </menu>
