@@ -9,7 +9,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
-            android:name=".MainActivity"
+            android:name=".MVPDisplayNoteList.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -22,7 +22,7 @@
             android:name=".MPVEditNote.EditNoteActivity"
             android:label="Edit Your Note"
             android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MVPDisplayNoteList.MainActivity">
         </activity>
     </application>
 

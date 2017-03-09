@@ -6,6 +6,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import com.example.prora.demonoteandroid.MPVEditNote.ModelEditNote;
+import com.example.prora.demonoteandroid.MVPDisplayNoteList.Note;
 
 import java.util.ArrayList;
 
@@ -14,7 +18,7 @@ import java.util.ArrayList;
  */
 
 public class DBHelper extends SQLiteOpenHelper {
-
+	private static final String TAG = DBHelper.class.getSimpleName();
 	private static DBHelper instance;
 	private static final String DATABASE_NAME = "MyNoteDatabase.db";
 	private static final int DATABASE_VERSION = 1;
@@ -68,13 +72,15 @@ public class DBHelper extends SQLiteOpenHelper {
 		return sqLiteDatabase.delete(DATABASE_NAME, "id = ? ", new String[] {Integer.toString(id)});
 	}
 
-	public ArrayList<String> getAllNotes(){
-		ArrayList<String> arrayList = new ArrayList<>();
+	public ArrayList<Note> getAllNotes(){
+		ArrayList<Note> arrayList = new ArrayList<>();
 		SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
 		Cursor data = sqLiteDatabase.rawQuery("select * from " + NOTE_TABLE_NAME, null);
 		data.moveToFirst();
 		while (data.isAfterLast() == false){
-			arrayList.add(data.getString(data.getColumnIndex(NOTE_COLUMN_CONTENT)));
+			Note note = new Note(data.getString(data.getColumnIndex(NOTE_COLUMN_CONTENT)),
+					data.getInt(data.getColumnIndex(NOTE_COLUMN_ID)));
+			arrayList.add(note);
 			data.moveToNext();
 		}
 		return arrayList;
@@ -84,6 +90,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
 		Cursor data = sqLiteDatabase.rawQuery("select * from " + NOTE_TABLE_NAME + " where " + NOTE_COLUMN_ID + " = " + id +"",
 				null);
+		Log.d(TAG, "getANote: " + "select * from " + NOTE_TABLE_NAME + " where " + NOTE_COLUMN_ID + " = " + id +"");
+		data.moveToFirst();
 		return data.getString(data.getColumnIndex(NOTE_COLUMN_CONTENT));
 	}
 }

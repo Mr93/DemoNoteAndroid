@@ -20,6 +20,7 @@ public class EditNoteActivity extends AppCompatActivity implements MVP_EditNote.
 	private MVP_EditNote.ProvidedPresenter providedPresenter;
 	private EditText editTextNote;
 	private StateMaintainer stateMaintainer;
+	private int noteId = -1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +29,11 @@ public class EditNoteActivity extends AppCompatActivity implements MVP_EditNote.
 		editTextNote = (EditText) findViewById(R.id.linedEditText);
 		stateMaintainer = StateMaintainer.getInstance();
 		setUpToolBar();
+		if(getIntent().getExtras() != null){
+			noteId = getIntent().getExtras().getInt("noteId");
+			Log.d(TAG, "onCreate: " + noteId);
+			editTextNote.setText(getIntent().getExtras().getString("content"));
+		}
 	}
 
 	private void setUpToolBar() {
@@ -53,12 +59,12 @@ public class EditNoteActivity extends AppCompatActivity implements MVP_EditNote.
 
 	private void setUpMVP(){
 		if(stateMaintainer.firstTimeIn(R.layout.activity_edit_note)){
-			PresenterEditNote presenterEditNote = new PresenterEditNote(this);
+			PresenterEditNote presenterEditNote = new PresenterEditNote(this, noteId);
 			ModelEditNote modelEditNote = new ModelEditNote(presenterEditNote);
 			presenterEditNote.setModel(modelEditNote);
 			providedPresenter = presenterEditNote;
 		}else {
-			providedPresenter = stateMaintainer.getStateProvidedPresenterEditNote(R.layout.activity_edit_note);
+			providedPresenter = (MVP_EditNote.ProvidedPresenter) stateMaintainer.getPresenter(R.layout.activity_edit_note);
 			providedPresenter.setView(this);
 		}
 	}
@@ -66,7 +72,7 @@ public class EditNoteActivity extends AppCompatActivity implements MVP_EditNote.
 	@Override
 	protected void onStop() {
 		super.onStop();
-		stateMaintainer.updateStateProvidedPresenterEditNote(R.layout.activity_edit_note, providedPresenter);
+		stateMaintainer.updatePresenterState(R.layout.activity_edit_note, providedPresenter);
 	}
 
 	@Override

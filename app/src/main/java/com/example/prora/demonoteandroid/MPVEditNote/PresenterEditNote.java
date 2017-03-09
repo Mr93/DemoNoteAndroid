@@ -18,8 +18,9 @@ public class PresenterEditNote implements MVP_EditNote.ProvidedPresenter, MVP_Ed
 	private MVP_EditNote.ProvidedModel model;
 	private int nodeId = -1;
 
-	public PresenterEditNote(MVP_EditNote.RequiredView view) {
+	public PresenterEditNote(MVP_EditNote.RequiredView view, int nodeId) {
 		this.view = view;
+		this.nodeId = nodeId;
 	}
 
 	@Override
@@ -29,6 +30,7 @@ public class PresenterEditNote implements MVP_EditNote.ProvidedPresenter, MVP_Ed
 			view.saveError("Note can't empty");
 		} else {
 			Log.d(TAG, "saveNote: " + content);
+			Log.d(TAG, "saveNote: " + nodeId);
 			model.saveNoteToDB(content, nodeId);
 		}
 	}
@@ -56,12 +58,6 @@ public class PresenterEditNote implements MVP_EditNote.ProvidedPresenter, MVP_Ed
 	@Override
 	public void noteSaved(int noteId) {
 		this.nodeId = noteId;
-		ArrayList<String> temp = DBHelper.getInstance(getContext()).getAllNotes();
-		if (temp != null) {
-			for (int i = 0; i < temp.size(); i++) {
-				Log.d(TAG, "noteSaved: " + i + ", " + temp.get(i).toString());
-			}
-		}
 		view.saveSuccess();
 	}
 

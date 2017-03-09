@@ -3,6 +3,7 @@ package com.example.prora.demonoteandroid;
 import com.example.prora.demonoteandroid.MPVEditNote.MVP_EditNote;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * Created by prora on 3/9/2017.
@@ -10,7 +11,8 @@ import java.util.HashMap;
 
 public class StateMaintainer {
 	protected final String TAG = getClass().getName();
-	private HashMap<Integer, MVP_EditNote.ProvidedPresenter> dataState = new HashMap<>();
+	private HashMap<Integer, Object> dataState = new HashMap<>();
+
 	private static StateMaintainer instance;
 
 	private StateMaintainer() {
@@ -27,7 +29,7 @@ public class StateMaintainer {
 	//creates activity responsible to maintain the objects
 	public boolean firstTimeIn(int activityId) {
 		try {
-			MVP_EditNote.ProvidedPresenter providedPresenterOps = dataState.get(activityId);
+			Object providedPresenterOps = dataState.get(activityId);
 			if (providedPresenterOps == null) {
 				return true;
 			} else {
@@ -38,11 +40,11 @@ public class StateMaintainer {
 		}
 	}
 
-	public void updateStateProvidedPresenterEditNote(int activityId, MVP_EditNote.ProvidedPresenter providedPresenterOps) {
+	public void updatePresenterState(int activityId, Object providedPresenterOps) {
 		dataState.put(activityId, providedPresenterOps);
 	}
 
-	public MVP_EditNote.ProvidedPresenter getStateProvidedPresenterEditNote(int activityId) {
+	public Object getPresenter(int activityId) {
 		return dataState.get(activityId);
 	}
 
