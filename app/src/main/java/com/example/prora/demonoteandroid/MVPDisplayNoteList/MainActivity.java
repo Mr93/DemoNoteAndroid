@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.prora.demonoteandroid.GoogleDriveApi.GoogleDriveHelper;
 import com.example.prora.demonoteandroid.MPVEditNote.EditNoteActivity;
 import com.example.prora.demonoteandroid.R;
 import com.example.prora.demonoteandroid.StateMaintainer;
@@ -20,7 +21,6 @@ public class MainActivity extends AppCompatActivity implements MVP_DisplayNoteLi
 	private static final String TAG = MainActivity.class.getSimpleName();
 	private RecyclerView recyclerView;
 	private StateMaintainer stateMaintainer;
-
 
 	private MVP_DisplayNoteList.ProvidedPresenter providedPresenter;
 
@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements MVP_DisplayNoteLi
 			}
 		});
 		recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+		GoogleDriveHelper.getInstance().createApiClient(this);
 	}
 
 	@Override
@@ -47,12 +48,6 @@ public class MainActivity extends AppCompatActivity implements MVP_DisplayNoteLi
 		super.onStart();
 		setUpMVP();
 		providedPresenter.initRecyclerView();
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-		stateMaintainer.updatePresenterState(R.layout.activity_main, providedPresenter);
 	}
 
 	private void setUpMVP(){
@@ -66,6 +61,14 @@ public class MainActivity extends AppCompatActivity implements MVP_DisplayNoteLi
 			providedPresenter.setView(this);
 		}
 	}
+
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		stateMaintainer.updatePresenterState(R.layout.activity_main, providedPresenter);
+	}
+
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

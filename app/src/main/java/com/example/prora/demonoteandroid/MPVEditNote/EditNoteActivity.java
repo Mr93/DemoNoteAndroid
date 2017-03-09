@@ -1,6 +1,7 @@
 package com.example.prora.demonoteandroid.MPVEditNote;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -11,8 +12,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.prora.demonoteandroid.GoogleDriveApi.GoogleDriveHelper;
 import com.example.prora.demonoteandroid.R;
 import com.example.prora.demonoteandroid.StateMaintainer;
+
+import static com.example.prora.demonoteandroid.GoogleDriveApi.GoogleDriveHelper.RESOLVE_CONNECTION_REQUEST_CODE;
 
 public class EditNoteActivity extends AppCompatActivity implements MVP_EditNote.RequiredView {
 
@@ -20,7 +24,7 @@ public class EditNoteActivity extends AppCompatActivity implements MVP_EditNote.
 	private MVP_EditNote.ProvidedPresenter providedPresenter;
 	private EditText editTextNote;
 	private StateMaintainer stateMaintainer;
-	private int noteId = -1;
+	private int noteId = ModelEditNote.ID_ERROR;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -29,17 +33,17 @@ public class EditNoteActivity extends AppCompatActivity implements MVP_EditNote.
 		editTextNote = (EditText) findViewById(R.id.linedEditText);
 		stateMaintainer = StateMaintainer.getInstance();
 		setUpToolBar();
-		if(getIntent().getExtras() != null){
+		if (getIntent().getExtras() != null) {
 			noteId = getIntent().getExtras().getInt("noteId");
-			Log.d(TAG, "onCreate: " + noteId);
 			editTextNote.setText(getIntent().getExtras().getString("content"));
+			editTextNote.setSelection(editTextNote.getText().length());
 		}
 	}
 
 	private void setUpToolBar() {
 		Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
 		setSupportActionBar(toolbar);
-		if (getSupportActionBar() != null){
+		if (getSupportActionBar() != null) {
 			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 			getSupportActionBar().setDisplayShowHomeEnabled(true);
 		}
@@ -57,13 +61,13 @@ public class EditNoteActivity extends AppCompatActivity implements MVP_EditNote.
 		setUpMVP();
 	}
 
-	private void setUpMVP(){
-		if(stateMaintainer.firstTimeIn(R.layout.activity_edit_note)){
+	private void setUpMVP() {
+		if (stateMaintainer.firstTimeIn(R.layout.activity_edit_note)) {
 			PresenterEditNote presenterEditNote = new PresenterEditNote(this);
 			ModelEditNote modelEditNote = new ModelEditNote(presenterEditNote);
 			presenterEditNote.setModel(modelEditNote);
 			providedPresenter = presenterEditNote;
-		}else {
+		} else {
 			providedPresenter = (MVP_EditNote.ProvidedPresenter) stateMaintainer.getPresenter(R.layout.activity_edit_note);
 			providedPresenter.setView(this);
 		}
@@ -76,11 +80,6 @@ public class EditNoteActivity extends AppCompatActivity implements MVP_EditNote.
 	}
 
 	@Override
-	public void onBackPressed() {
-		super.onBackPressed();
-	}
-
-	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.menu_edit_note, menu);
 		return true;
@@ -89,9 +88,10 @@ public class EditNoteActivity extends AppCompatActivity implements MVP_EditNote.
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
-		switch (id){
+		switch (id) {
 			case R.id.action_save:
-				providedPresenter.saveNote(editTextNote.getText().toString());
+				//providedPresenter.saveNote(editTextNote.getText().toString());
+				GoogleDriveHelper.getInstance().connectGoogleDrive(this);
 				break;
 			default:
 				break;
@@ -118,5 +118,19 @@ public class EditNoteActivity extends AppCompatActivity implements MVP_EditNote.
 	@Override
 	public int getNoteId() {
 		return noteId;
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (requestCode) {
+			case RESOLVE_CONNECTION_REQUEST_CODE:
+				if (resultCode == RESULT_OK) {
+					GoogleDriveHelper.getInstance().connectGoogleDrive(this);
+				}
+				break;
+			default:
+				break;
+		}
 	}
 }

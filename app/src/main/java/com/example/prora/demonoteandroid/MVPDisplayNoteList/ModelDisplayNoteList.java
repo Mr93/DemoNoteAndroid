@@ -32,7 +32,6 @@ public class ModelDisplayNoteList implements MVP_DisplayNoteList.ProvidedModel {
 
 			@Override
 			protected void onPostExecute(ArrayList<Note> values) {
-				Log.d(TAG, "onPostExecute: " + values.size());
 				if(values != null && !values.isEmpty()){
 					presenter.updateDataFromDB(values);
 				}

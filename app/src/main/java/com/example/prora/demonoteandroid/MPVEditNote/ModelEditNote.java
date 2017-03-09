@@ -15,6 +15,7 @@ public class ModelEditNote implements MVP_EditNote.ProvidedModel {
 	private static final String TAG = ModelEditNote.class.getSimpleName();
 	private MVP_EditNote.RequiredPresenter presenter;
 	private DBHelper dbHelper;
+	public static final int ID_ERROR = -1;
 
 	public ModelEditNote(MVP_EditNote.RequiredPresenter presenter) {
 		this.presenter = presenter;
@@ -26,7 +27,7 @@ public class ModelEditNote implements MVP_EditNote.ProvidedModel {
 		new AsyncTask<Void, Void, Integer>(){
 			@Override
 			protected Integer doInBackground(Void... params) {
-				if(noteId == -1){
+				if(noteId == ID_ERROR){
 					return dbHelper.insertNote(content);
 				}else {
 					return dbHelper.updateNote(content, noteId);
@@ -35,7 +36,7 @@ public class ModelEditNote implements MVP_EditNote.ProvidedModel {
 
 			@Override
 			protected void onPostExecute(Integer value) {
-				if(value != -1){
+				if(value != ID_ERROR){
 					presenter.noteSaved(value);
 				}else {
 					presenter.noteSaveFailed();

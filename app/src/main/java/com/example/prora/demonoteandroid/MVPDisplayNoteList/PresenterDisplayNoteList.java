@@ -51,6 +51,31 @@ public class PresenterDisplayNoteList implements MVP_DisplayNoteList.ProvidedPre
 		model.loadNoteListFromDB();
 	}
 
+	private void createTouchCallBack() {
+		ItemTouchHelper.SimpleCallback simpleCallback = createCallBackSwipe();
+		ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+		itemTouchHelper.attachToRecyclerView(getRecyclerView());
+	}
+
+	@NonNull
+	private ItemTouchHelper.SimpleCallback createCallBackSwipe() {
+		ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT |
+				ItemTouchHelper.RIGHT) {
+			@Override
+			public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+				return false;
+			}
+
+			@Override
+			public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+				model.deleteNoteFromDB(((NoteListAdapter.MyViewHolder)viewHolder).noteId);
+				noteListContent.remove(viewHolder.getAdapterPosition());
+				noteListAdapter.notifyDataSetChanged();
+			}
+		};
+		return simpleCallback;
+	}
+
 	@Override
 	public void setModel(MVP_DisplayNoteList.ProvidedModel model) {
 		this.model = model;
@@ -61,34 +86,6 @@ public class PresenterDisplayNoteList implements MVP_DisplayNoteList.ProvidedPre
 		this.view = view;
 	}
 
-	private void createTouchCallBack() {
-		ItemTouchHelper.SimpleCallback simpleCallback = createCallBackSwipe();
-		ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
-		itemTouchHelper.attachToRecyclerView(getRecyclerView());
-	}
-
-	@NonNull
-	private ItemTouchHelper.SimpleCallback createCallBackSwipe() {
-		Log.d(TAG, "createCallBackSwipe: " + System.identityHashCode(this));
-		ItemTouchHelper.SimpleCallback temp = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT |
-				ItemTouchHelper.RIGHT) {
-			@Override
-			public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-				return false;
-			}
-
-			@Override
-			public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-				Log.d(TAG, "createCallBackSwipe: " + System.identityHashCode(PresenterDisplayNoteList.this));
-				Log.d(TAG, "onSwiped: " + ((NoteListAdapter.MyViewHolder)viewHolder).noteId);
-				model.deleteNoteFromDB(((NoteListAdapter.MyViewHolder)viewHolder).noteId);
-				noteListContent.remove(viewHolder.getAdapterPosition());
-				noteListAdapter.notifyDataSetChanged();
-			}
-		};
-		return temp;
-	}
-
 	@Override
 	public Context getContext() {
 		return view.getViewContext();
@@ -97,10 +94,6 @@ public class PresenterDisplayNoteList implements MVP_DisplayNoteList.ProvidedPre
 	@Override
 	public void updateDataFromDB(ArrayList<Note> noteListContent) {
 		if(getRecyclerView() != null){
-			for(int i = 0; i < noteListContent.size(); i++){
-				Log.d(TAG, "updateDataFromDB: " + noteListContent.get(i).noteId);
-				Log.d(TAG, "updateDataFromDB: " + noteListContent.get(i).noteContent);
-			}
 			this.noteListContent.clear();
 			this.noteListContent.addAll(noteListContent);
 			noteListAdapter.notifyDataSetChanged();

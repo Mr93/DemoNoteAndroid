@@ -23,7 +23,6 @@ public class PresenterEditNote implements MVP_EditNote.ProvidedPresenter, MVP_Ed
 
 	@Override
 	public void saveNote(String content) {
-		Log.d(TAG, "saveNote: " + view);
 		if (content.isEmpty()) {
 			view.saveError("Note can't empty");
 		} else {

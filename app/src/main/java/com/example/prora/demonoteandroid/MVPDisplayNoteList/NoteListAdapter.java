@@ -1,13 +1,10 @@
 package com.example.prora.demonoteandroid.MVPDisplayNoteList;
 
 import android.content.Intent;
-import android.graphics.Outline;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewOutlineProvider;
 import android.widget.TextView;
 
 import com.example.prora.demonoteandroid.MPVEditNote.EditNoteActivity;
@@ -50,18 +47,16 @@ public class NoteListAdapter extends RecyclerView.Adapter<NoteListAdapter.MyView
 		public TextView noteContent;
 		public int noteId;
 
-		public MyViewHolder(final View view) {
+		public MyViewHolder(View view) {
 			super(view);
 			this.noteContent = (TextView) view.findViewById(R.id.noteContent);
-
-			this.noteContent.setClickable(true);
 			this.noteContent.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Intent intent = new Intent(view.getContext(), EditNoteActivity.class);
+					Intent intent = new Intent(v.getContext(), EditNoteActivity.class);
 					intent.putExtra("content", noteContent.getText().toString());
 					intent.putExtra("noteId", noteId);
-					view.getContext().startActivity(intent);
+					v.getContext().startActivity(intent);
 				}
 			});
 		}
