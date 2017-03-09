@@ -80,6 +80,8 @@ public class PresenterDisplayNoteList implements MVP_DisplayNoteList.ProvidedPre
 			@Override
 			public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
 				Log.d(TAG, "createCallBackSwipe: " + System.identityHashCode(PresenterDisplayNoteList.this));
+				Log.d(TAG, "onSwiped: " + ((NoteListAdapter.MyViewHolder)viewHolder).noteId);
+				model.deleteNoteFromDB(((NoteListAdapter.MyViewHolder)viewHolder).noteId);
 				noteListContent.remove(viewHolder.getAdapterPosition());
 				noteListAdapter.notifyDataSetChanged();
 			}

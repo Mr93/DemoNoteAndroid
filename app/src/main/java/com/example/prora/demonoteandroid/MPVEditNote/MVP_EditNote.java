@@ -27,8 +27,9 @@ public interface MVP_EditNote {
 
 	interface RequiredView{
 		void saveError(String message);
-		void saveSuccess();
+		void saveSuccess(int notedId);
 		Context getViewContext();
+		int getNoteId();
 	}
 
 }

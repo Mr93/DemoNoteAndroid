@@ -41,4 +41,15 @@ public class ModelDisplayNoteList implements MVP_DisplayNoteList.ProvidedModel {
 		}.execute();
 	}
 
+	@Override
+	public void deleteNoteFromDB(final int noteId) {
+		new AsyncTask<Void, Void, Void>(){
+			@Override
+			protected Void doInBackground(Void... params) {
+				dbHelper.deleteNote(noteId);
+				return null;
+			}
+		}.execute();
+	}
+
 }

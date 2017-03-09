@@ -19,6 +19,7 @@ public interface MVP_DisplayNoteList {
 
 	interface ProvidedModel{
 		void loadNoteListFromDB();
+		void deleteNoteFromDB(int noteId);
 	}
 
 	interface RequiredPresenter{

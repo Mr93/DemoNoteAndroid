@@ -16,11 +16,9 @@ public class PresenterEditNote implements MVP_EditNote.ProvidedPresenter, MVP_Ed
 	private static final String TAG = PresenterEditNote.class.getSimpleName();
 	private MVP_EditNote.RequiredView view;
 	private MVP_EditNote.ProvidedModel model;
-	private int nodeId = -1;
 
-	public PresenterEditNote(MVP_EditNote.RequiredView view, int nodeId) {
+	public PresenterEditNote(MVP_EditNote.RequiredView view) {
 		this.view = view;
-		this.nodeId = nodeId;
 	}
 
 	@Override
@@ -29,9 +27,7 @@ public class PresenterEditNote implements MVP_EditNote.ProvidedPresenter, MVP_Ed
 		if (content.isEmpty()) {
 			view.saveError("Note can't empty");
 		} else {
-			Log.d(TAG, "saveNote: " + content);
-			Log.d(TAG, "saveNote: " + nodeId);
-			model.saveNoteToDB(content, nodeId);
+			model.saveNoteToDB(content, view.getNoteId());
 		}
 	}
 
@@ -57,8 +53,7 @@ public class PresenterEditNote implements MVP_EditNote.ProvidedPresenter, MVP_Ed
 
 	@Override
 	public void noteSaved(int noteId) {
-		this.nodeId = noteId;
-		view.saveSuccess();
+		view.saveSuccess(noteId);
 	}
 
 	@Override

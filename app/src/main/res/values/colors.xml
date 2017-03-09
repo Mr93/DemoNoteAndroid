@@ -6,5 +6,5 @@
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="gray">#ffe24e</color>
-    <color name="background_note">#fff8bb</color>
+    <color name="background_note">#ecdf6f</color>
 </resources>

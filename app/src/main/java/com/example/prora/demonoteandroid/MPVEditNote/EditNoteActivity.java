@@ -59,7 +59,7 @@ public class EditNoteActivity extends AppCompatActivity implements MVP_EditNote.
 
 	private void setUpMVP(){
 		if(stateMaintainer.firstTimeIn(R.layout.activity_edit_note)){
-			PresenterEditNote presenterEditNote = new PresenterEditNote(this, noteId);
+			PresenterEditNote presenterEditNote = new PresenterEditNote(this);
 			ModelEditNote modelEditNote = new ModelEditNote(presenterEditNote);
 			presenterEditNote.setModel(modelEditNote);
 			providedPresenter = presenterEditNote;
@@ -105,12 +105,18 @@ public class EditNoteActivity extends AppCompatActivity implements MVP_EditNote.
 	}
 
 	@Override
-	public void saveSuccess() {
+	public void saveSuccess(int noteId) {
+		this.noteId = noteId;
 		Toast.makeText(this, "Save success", Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
 	public Context getViewContext() {
 		return this;
+	}
+
+	@Override
+	public int getNoteId() {
+		return noteId;
 	}
 }

@@ -69,7 +69,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	public synchronized Integer deleteNote(Integer id){
 		SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
-		return sqLiteDatabase.delete(DATABASE_NAME, "id = ? ", new String[] {Integer.toString(id)});
+		Log.d(TAG, "deleteNote: " + id);
+		return sqLiteDatabase.delete(NOTE_TABLE_NAME, "id = ? ", new String[] {Integer.toString(id)});
 	}
 
 	public ArrayList<Note> getAllNotes(){
