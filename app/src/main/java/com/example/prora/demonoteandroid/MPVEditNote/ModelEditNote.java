@@ -49,12 +49,12 @@ public class ModelEditNote implements MVP_EditNote.ProvidedModel {
 
 	@Override
 	public void uploadNoteToDrive(Note note) {
-
+		GoogleDriveHelper.getInstance(presenter.getContext()).uploadNoteToDrive(note);
 	}
 
 	@Override
 	public void createRootFileInDrive(Note note) {
-		GoogleDriveHelper.getInstance().createRootFile(presenter.getContext(), note);
+		GoogleDriveHelper.getInstance(presenter.getContext()).createRootFile(note);
 	}
 
 

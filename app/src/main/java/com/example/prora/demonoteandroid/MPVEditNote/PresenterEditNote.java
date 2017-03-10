@@ -3,6 +3,8 @@ package com.example.prora.demonoteandroid.MPVEditNote;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.prora.demonoteandroid.GoogleDriveApi.DriveClientConnectedCallBack;
+import com.example.prora.demonoteandroid.GoogleDriveApi.GoogleDriveHelper;
 import com.example.prora.demonoteandroid.MVPDisplayNoteList.Note;
 import com.example.prora.demonoteandroid.SettingsUtils;
 
@@ -34,10 +36,15 @@ public class PresenterEditNote implements MVP_EditNote.ProvidedPresenter, MVP_Ed
 
 	@Override
 	public void upload(Note note) {
-		if(SettingsUtils.getInstances().getStringSharedPreferences(KEY_SETTING_ROOT_FILE_DRIVE_ID) == ""){
-			model.createRootFileInDrive(note);
+		if(!GoogleDriveHelper.getInstance(getContext()).getGoogleApiClient().isConnected()){
+			GoogleDriveHelper.getInstance(getContext()).connectGoogleDrive();
 		}else {
-			model.uploadNoteToDrive(note);
+			if(SettingsUtils.getInstances().getStringSharedPreferences(KEY_SETTING_ROOT_FILE_DRIVE_ID) == ""){
+				model.createRootFileInDrive(note);
+			}else {
+				Log.d(TAG, "upload: " + SettingsUtils.getInstances().getStringSharedPreferences(KEY_SETTING_ROOT_FILE_DRIVE_ID));
+				model.uploadNoteToDrive(note);
+			}
 		}
 	}
 
@@ -65,4 +72,5 @@ public class PresenterEditNote implements MVP_EditNote.ProvidedPresenter, MVP_Ed
 	public void noteSaveFailed() {
 		view.saveError("Save error");
 	}
+
 }

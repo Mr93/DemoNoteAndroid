@@ -33,7 +33,6 @@ public interface MVP_EditNote {
 		void saveError(String message);
 		void saveSuccess(Note note);
 		Context getViewContext();
-		int getNoteId();
 	}
 
 }

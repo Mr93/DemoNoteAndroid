@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.prora.demonoteandroid.GoogleDriveApi.DriveClientConnectedCallBack;
 import com.example.prora.demonoteandroid.GoogleDriveApi.GoogleDriveHelper;
 import com.example.prora.demonoteandroid.MPVEditNote.EditNoteActivity;
 import com.example.prora.demonoteandroid.R;
@@ -40,7 +41,8 @@ public class MainActivity extends AppCompatActivity implements MVP_DisplayNoteLi
 			}
 		});
 		recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-		GoogleDriveHelper.getInstance().createApiClient(this);
+		GoogleDriveHelper.getInstance(this).createApiClient();
+		GoogleDriveHelper.getInstance(this).connectGoogleDrive();
 	}
 
 	@Override
@@ -101,4 +103,5 @@ public class MainActivity extends AppCompatActivity implements MVP_DisplayNoteLi
 	public Context getViewContext() {
 		return this;
 	}
+
 }

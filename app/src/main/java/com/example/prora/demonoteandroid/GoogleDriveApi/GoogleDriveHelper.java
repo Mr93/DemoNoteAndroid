@@ -1,6 +1,7 @@
 package com.example.prora.demonoteandroid.GoogleDriveApi;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.IntentSender;
 import android.os.Bundle;
@@ -11,13 +12,16 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.prora.demonoteandroid.MVPDisplayNoteList.Note;
+import com.example.prora.demonoteandroid.SettingsUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveApi;
+import com.google.android.gms.drive.DriveFile;
 import com.google.android.gms.drive.DriveFolder;
+import com.google.android.gms.drive.DriveId;
 import com.google.android.gms.drive.MetadataChangeSet;
 
 import org.json.JSONException;
@@ -28,6 +32,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
+import static com.example.prora.demonoteandroid.Constant.KEY_SETTING_ROOT_FILE_DRIVE_ID;
 import static com.example.prora.demonoteandroid.Constant.REQUEST_CODE_CREATOR;
 import static com.example.prora.demonoteandroid.Constant.RESOLVE_CONNECTION_REQUEST_CODE;
 
@@ -35,26 +40,29 @@ import static com.example.prora.demonoteandroid.Constant.RESOLVE_CONNECTION_REQU
  * Created by prora on 3/9/2017.
  */
 
-public class GoogleDriveHelper implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class GoogleDriveHelper implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 	private static final String TAG = GoogleDriveHelper.class.getSimpleName();
 	private GoogleApiClient googleApiClient;
 	private Note noteUpload;
 	private Context context;
-
 	private static GoogleDriveHelper instance;
-
 	private GoogleDriveHelper() {
 
 	}
 
-	public synchronized static GoogleDriveHelper getInstance() {
+	public synchronized static GoogleDriveHelper getInstance(Context context) {
 		if (instance == null) {
 			instance = new GoogleDriveHelper();
 		}
+		instance.context = context;
 		return instance;
 	}
 
-	public synchronized void createApiClient(Context context) {
+	public GoogleApiClient getGoogleApiClient(){
+		return googleApiClient;
+	}
+
+	public synchronized void createApiClient() {
 		if (googleApiClient == null) {
 			googleApiClient = new GoogleApiClient.Builder(context)
 					.addApi(Drive.API)
@@ -65,8 +73,8 @@ public class GoogleDriveHelper implements GoogleApiClient.ConnectionCallbacks, G
 		}
 	}
 
-	private void connectGoogleDrive(Context context) {
-		this.context = context;
+	public void connectGoogleDrive() {
+		Log.d(TAG, "connectGoogleDrive: aaaa");
 		if (googleApiClient != null) {
 			googleApiClient.connect();
 		}
@@ -74,9 +82,11 @@ public class GoogleDriveHelper implements GoogleApiClient.ConnectionCallbacks, G
 
 	@Override
 	public void onConnected(@Nullable Bundle bundle) {
-		Toast.makeText(context, "Connected: click upload/download again", Toast.LENGTH_SHORT).show();
+		Toast.makeText(context, "Drive connected, try your previous action again", Toast.LENGTH_SHORT).show();
 		Log.d(TAG, "onConnected: ");
 	}
+
+
 
 	@Override
 	public void onConnectionSuspended(int i) {
@@ -86,6 +96,7 @@ public class GoogleDriveHelper implements GoogleApiClient.ConnectionCallbacks, G
 	@Override
 	public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 		Activity activity = (Activity) context;
+		Log.d(TAG, "onConnectionFailed: aaaa");
 		if (activity != null && activity.hasWindowFocus()) {
 			if (connectionResult.hasResolution()) {
 				try {
@@ -99,24 +110,30 @@ public class GoogleDriveHelper implements GoogleApiClient.ConnectionCallbacks, G
 		}
 	}
 
-	public void createRootFile(Context context, Note note) {
-		if (!googleApiClient.isConnected()) {
-			connectGoogleDrive(context);
-		} else {
-			this.noteUpload = note;
-			Drive.DriveApi.newDriveContents(googleApiClient)
-					.setResultCallback(driveContentsCallback);
-		}
+	public void createRootFile(Note note) {
+		this.noteUpload = note;
+		Drive.DriveApi.newDriveContents(googleApiClient)
+				.setResultCallback(driveContentsCallback);
 	}
 
 	final ResultCallback<DriveApi.DriveContentsResult> driveContentsCallback =
 			new ResultCallback<DriveApi.DriveContentsResult>() {
-
 				@Override
 				public void onResult(final DriveApi.DriveContentsResult result) {
 					new Thread() {
 						@Override
 						public void run() {
+							writeContent();
+							IntentSender intentSender = setupIntentSender();
+							try {
+								((Activity) context).startIntentSenderForResult(
+										intentSender, REQUEST_CODE_CREATOR, null, 0, 0, 0);
+							} catch (IntentSender.SendIntentException e) {
+								Log.w(TAG, "Unable to send intent", e);
+							}
+						}
+
+						private void writeContent() {
 							// write content to DriveContents
 							OutputStream outputStream = result.getDriveContents().getOutputStream();
 							Writer writer = new OutputStreamWriter(outputStream);
@@ -130,23 +147,28 @@ public class GoogleDriveHelper implements GoogleApiClient.ConnectionCallbacks, G
 							} catch (JSONException e) {
 								e.printStackTrace();
 							}
+						}
+
+						private IntentSender setupIntentSender() {
 							MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
 									.setTitle("Backup Note.json")
 									.setMimeType("text/plain")
 									.setStarred(true).build();
-							IntentSender intentSender = Drive.DriveApi
+							return Drive.DriveApi
 									.newCreateFileActivityBuilder()
 									.setInitialMetadata(changeSet)
 									.setInitialDriveContents(result.getDriveContents())
 									.build(googleApiClient);
-							try {
-								((Activity) context).startIntentSenderForResult(
-										intentSender, REQUEST_CODE_CREATOR, null, 0, 0, 0);
-							} catch (IntentSender.SendIntentException e) {
-								Log.w(TAG, "Unable to send intent", e);
-							}
 						}
 					}.start();
 				}
 			};
+
+
+	public void uploadNoteToDrive(Note note) {
+		this.noteUpload = note;
+		DriveId driveId = DriveId.decodeFromString(SettingsUtils.getInstances().getStringSharedPreferences(KEY_SETTING_ROOT_FILE_DRIVE_ID));
+		DriveFile driveFile = driveId.asDriveFile();
+		new EditContentDrive(context, note).execute(driveFile);
+	}
 }

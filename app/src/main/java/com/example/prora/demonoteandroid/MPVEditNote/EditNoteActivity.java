@@ -1,5 +1,6 @@
 package com.example.prora.demonoteandroid.MPVEditNote;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -113,23 +114,19 @@ public class EditNoteActivity extends AppCompatActivity implements MVP_EditNote.
 
 	@Override
 	public void saveError(String message) {
+		Log.d(TAG, "saveError: " + message);
 		Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
 	public void saveSuccess(Note note) {
 		this.noteId = note.noteId;
-		Toast.makeText(this, "Save success", Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, "Note saved ", Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
 	public Context getViewContext() {
 		return this;
-	}
-
-	@Override
-	public int getNoteId() {
-		return noteId;
 	}
 
 	@Override
@@ -144,13 +141,16 @@ public class EditNoteActivity extends AppCompatActivity implements MVP_EditNote.
 				break;
 			case REQUEST_CODE_CREATOR:
 				if (resultCode == RESULT_OK) {
-					DriveId driveId = (DriveId) data.getParcelableExtra(
+					DriveId driveId = data.getParcelableExtra(
 							OpenFileActivityBuilder.EXTRA_RESPONSE_DRIVE_ID);
+					Log.d(TAG, "onActivityResult: " + driveId.getResourceId());
 					SettingsUtils.getInstances().setStringSharedPreferences(KEY_SETTING_ROOT_FILE_DRIVE_ID, driveId.toString());
+					Toast.makeText(this, "Upload success", Toast.LENGTH_SHORT).show();
 				}
 				break;
 			default:
 				break;
 		}
 	}
+
 }
