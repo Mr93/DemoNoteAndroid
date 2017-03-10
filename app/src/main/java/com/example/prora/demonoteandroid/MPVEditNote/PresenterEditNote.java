@@ -3,9 +3,10 @@ package com.example.prora.demonoteandroid.MPVEditNote;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.prora.demonoteandroid.DBHelper;
+import com.example.prora.demonoteandroid.MVPDisplayNoteList.Note;
+import com.example.prora.demonoteandroid.SettingsUtils;
 
-import java.util.ArrayList;
+import static com.example.prora.demonoteandroid.Constant.KEY_SETTING_ROOT_FILE_DRIVE_ID;
 
 /**
  * Created by prora on 3/8/2017.
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 
 public class PresenterEditNote implements MVP_EditNote.ProvidedPresenter, MVP_EditNote.RequiredPresenter {
 
+	//DriveId:CAESABikKCD6maG_1lYoAA==
 	private static final String TAG = PresenterEditNote.class.getSimpleName();
 	private MVP_EditNote.RequiredView view;
 	private MVP_EditNote.ProvidedModel model;
@@ -22,17 +24,21 @@ public class PresenterEditNote implements MVP_EditNote.ProvidedPresenter, MVP_Ed
 	}
 
 	@Override
-	public void saveNote(String content) {
-		if (content.isEmpty()) {
+	public void saveNote(Note note) {
+		if (note.noteContent.isEmpty()) {
 			view.saveError("Note can't empty");
 		} else {
-			model.saveNoteToDB(content, view.getNoteId());
+			model.saveNoteToDB(note);
 		}
 	}
 
 	@Override
-	public void upload(String content) {
-
+	public void upload(Note note) {
+		if(SettingsUtils.getInstances().getStringSharedPreferences(KEY_SETTING_ROOT_FILE_DRIVE_ID) == ""){
+			model.createRootFileInDrive(note);
+		}else {
+			model.uploadNoteToDrive(note);
+		}
 	}
 
 	@Override
@@ -51,8 +57,8 @@ public class PresenterEditNote implements MVP_EditNote.ProvidedPresenter, MVP_Ed
 	}
 
 	@Override
-	public void noteSaved(int noteId) {
-		view.saveSuccess(noteId);
+	public void noteSaved(Note note) {
+		view.saveSuccess(note);
 	}
 
 	@Override

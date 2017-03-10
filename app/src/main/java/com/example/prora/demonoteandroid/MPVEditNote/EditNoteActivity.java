@@ -12,11 +12,16 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.prora.demonoteandroid.GoogleDriveApi.GoogleDriveHelper;
+import com.example.prora.demonoteandroid.MVPDisplayNoteList.Note;
 import com.example.prora.demonoteandroid.R;
+import com.example.prora.demonoteandroid.SettingsUtils;
 import com.example.prora.demonoteandroid.StateMaintainer;
+import com.google.android.gms.drive.DriveId;
+import com.google.android.gms.drive.OpenFileActivityBuilder;
 
-import static com.example.prora.demonoteandroid.GoogleDriveApi.GoogleDriveHelper.RESOLVE_CONNECTION_REQUEST_CODE;
+import static com.example.prora.demonoteandroid.Constant.KEY_SETTING_ROOT_FILE_DRIVE_ID;
+import static com.example.prora.demonoteandroid.Constant.REQUEST_CODE_CREATOR;
+import static com.example.prora.demonoteandroid.Constant.RESOLVE_CONNECTION_REQUEST_CODE;
 
 public class EditNoteActivity extends AppCompatActivity implements MVP_EditNote.RequiredView {
 
@@ -88,10 +93,17 @@ public class EditNoteActivity extends AppCompatActivity implements MVP_EditNote.
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
+		Note note = new Note(editTextNote.getText().toString(), noteId);
 		switch (id) {
 			case R.id.action_save:
-				//providedPresenter.saveNote(editTextNote.getText().toString());
-				GoogleDriveHelper.getInstance().connectGoogleDrive(this);
+				providedPresenter.saveNote(note);
+				break;
+			case R.id.action_upload:
+				if(note.noteId == -1){
+					Toast.makeText(this, "You need save first", Toast.LENGTH_SHORT).show();
+				}else {
+					providedPresenter.upload(note);
+				}
 				break;
 			default:
 				break;
@@ -105,8 +117,8 @@ public class EditNoteActivity extends AppCompatActivity implements MVP_EditNote.
 	}
 
 	@Override
-	public void saveSuccess(int noteId) {
-		this.noteId = noteId;
+	public void saveSuccess(Note note) {
+		this.noteId = note.noteId;
 		Toast.makeText(this, "Save success", Toast.LENGTH_SHORT).show();
 	}
 
@@ -123,10 +135,18 @@ public class EditNoteActivity extends AppCompatActivity implements MVP_EditNote.
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
+		Note note = new Note(editTextNote.getText().toString(), noteId);
 		switch (requestCode) {
 			case RESOLVE_CONNECTION_REQUEST_CODE:
 				if (resultCode == RESULT_OK) {
-					GoogleDriveHelper.getInstance().connectGoogleDrive(this);
+					providedPresenter.upload(note);
+				}
+				break;
+			case REQUEST_CODE_CREATOR:
+				if (resultCode == RESULT_OK) {
+					DriveId driveId = (DriveId) data.getParcelableExtra(
+							OpenFileActivityBuilder.EXTRA_RESPONSE_DRIVE_ID);
+					SettingsUtils.getInstances().setStringSharedPreferences(KEY_SETTING_ROOT_FILE_DRIVE_ID, driveId.toString());
 				}
 				break;
 			default:

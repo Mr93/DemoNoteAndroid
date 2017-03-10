@@ -1,10 +1,10 @@
 package com.example.prora.demonoteandroid.MPVEditNote;
 
-import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.example.prora.demonoteandroid.DBHelper;
+import com.example.prora.demonoteandroid.GoogleDriveApi.GoogleDriveHelper;
+import com.example.prora.demonoteandroid.MVPDisplayNoteList.Note;
 
 /**
  * Created by prora on 3/8/2017.
@@ -23,21 +23,22 @@ public class ModelEditNote implements MVP_EditNote.ProvidedModel {
 	}
 
 	@Override
-	public void saveNoteToDB(final String content, final int noteId) {
+	public void saveNoteToDB(final Note note) {
 		new AsyncTask<Void, Void, Integer>(){
 			@Override
 			protected Integer doInBackground(Void... params) {
-				if(noteId == ID_ERROR){
-					return dbHelper.insertNote(content);
+				if(note.noteId == ID_ERROR){
+					return dbHelper.insertNote(note.noteContent);
 				}else {
-					return dbHelper.updateNote(content, noteId);
+					return dbHelper.updateNote(note.noteContent, note.noteId);
 				}
 			}
 
 			@Override
 			protected void onPostExecute(Integer value) {
 				if(value != ID_ERROR){
-					presenter.noteSaved(value);
+					note.noteId = value;
+					presenter.noteSaved(note);
 				}else {
 					presenter.noteSaveFailed();
 				}
@@ -45,4 +46,16 @@ public class ModelEditNote implements MVP_EditNote.ProvidedModel {
 			}
 		}.execute();
 	}
+
+	@Override
+	public void uploadNoteToDrive(Note note) {
+
+	}
+
+	@Override
+	public void createRootFileInDrive(Note note) {
+		GoogleDriveHelper.getInstance().createRootFile(presenter.getContext(), note);
+	}
+
+
 }
