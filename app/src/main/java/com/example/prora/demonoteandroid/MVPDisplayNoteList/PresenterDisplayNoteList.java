@@ -8,8 +8,12 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.widget.Toast;
 
+import com.example.prora.demonoteandroid.SettingsUtils;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.example.prora.demonoteandroid.Constant.KEY_SETTING_ROOT_FILE_DRIVE_ID;
 
 /**
  * Created by prora on 3/9/2017.
@@ -81,7 +85,12 @@ public class PresenterDisplayNoteList implements MVP_DisplayNoteList.ProvidedPre
 
 	@Override
 	public void getNoteListFromDrive() {
-		model.fetchNoteListFromDrive();
+		if(SettingsUtils.getInstances().getStringSharedPreferences(KEY_SETTING_ROOT_FILE_DRIVE_ID) == ""){
+			Toast.makeText(getContext(), "Don't have any note in drive, you need to upload a note first", Toast.LENGTH_SHORT).show
+					();
+		}else {
+			model.fetchNoteListFromDrive();
+		}
 	}
 
 	@Override

@@ -25,6 +25,7 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName=".MVPDisplayNoteList.MainActivity">
         </activity>
+
     </application>
 
 </manifest>
