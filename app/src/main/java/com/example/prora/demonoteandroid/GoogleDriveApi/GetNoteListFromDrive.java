@@ -6,7 +6,7 @@ import android.widget.Toast;
 
 import com.example.prora.demonoteandroid.Constant;
 import com.example.prora.demonoteandroid.MVPDisplayNoteList.MVP_DisplayNoteList;
-import com.example.prora.demonoteandroid.MVPDisplayNoteList.Note;
+import com.example.prora.demonoteandroid.Note;
 import com.google.android.gms.drive.DriveFile;
 
 import org.json.JSONArray;

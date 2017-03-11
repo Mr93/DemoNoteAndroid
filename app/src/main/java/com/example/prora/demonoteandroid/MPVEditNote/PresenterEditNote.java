@@ -3,9 +3,8 @@ package com.example.prora.demonoteandroid.MPVEditNote;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.prora.demonoteandroid.GoogleDriveApi.DriveClientConnectedCallBack;
 import com.example.prora.demonoteandroid.GoogleDriveApi.GoogleDriveHelper;
-import com.example.prora.demonoteandroid.MVPDisplayNoteList.Note;
+import com.example.prora.demonoteandroid.Note;
 import com.example.prora.demonoteandroid.SettingsUtils;
 
 import static com.example.prora.demonoteandroid.Constant.KEY_SETTING_ROOT_FILE_DRIVE_ID;

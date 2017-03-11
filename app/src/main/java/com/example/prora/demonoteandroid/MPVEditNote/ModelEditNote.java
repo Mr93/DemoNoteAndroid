@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 
 import com.example.prora.demonoteandroid.DBHelper;
 import com.example.prora.demonoteandroid.GoogleDriveApi.GoogleDriveHelper;
-import com.example.prora.demonoteandroid.MVPDisplayNoteList.Note;
+import com.example.prora.demonoteandroid.Note;
 
 /**
  * Created by prora on 3/8/2017.

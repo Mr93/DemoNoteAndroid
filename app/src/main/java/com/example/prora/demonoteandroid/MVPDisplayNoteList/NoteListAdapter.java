@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.prora.demonoteandroid.MPVEditNote.EditNoteActivity;
+import com.example.prora.demonoteandroid.Note;
 import com.example.prora.demonoteandroid.R;
 
 import java.util.List;

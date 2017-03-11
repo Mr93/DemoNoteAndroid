@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.example.prora.demonoteandroid.DBHelper;
 import com.example.prora.demonoteandroid.GoogleDriveApi.GoogleDriveHelper;
+import com.example.prora.demonoteandroid.Note;
 
 import java.util.ArrayList;
 

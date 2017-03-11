@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.widget.Toast;
 
+import com.example.prora.demonoteandroid.Note;
 import com.example.prora.demonoteandroid.SettingsUtils;
 
 import java.util.ArrayList;

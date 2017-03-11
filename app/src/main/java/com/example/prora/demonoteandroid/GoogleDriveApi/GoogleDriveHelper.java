@@ -1,18 +1,16 @@
 package com.example.prora.demonoteandroid.GoogleDriveApi;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.IntentSender;
 import android.os.Bundle;
-import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.example.prora.demonoteandroid.MVPDisplayNoteList.MVP_DisplayNoteList;
-import com.example.prora.demonoteandroid.MVPDisplayNoteList.Note;
+import com.example.prora.demonoteandroid.Note;
 import com.example.prora.demonoteandroid.SettingsUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -22,7 +20,6 @@ import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveApi;
 import com.google.android.gms.drive.DriveContents;
 import com.google.android.gms.drive.DriveFile;
-import com.google.android.gms.drive.DriveFolder;
 import com.google.android.gms.drive.DriveId;
 import com.google.android.gms.drive.MetadataChangeSet;
 

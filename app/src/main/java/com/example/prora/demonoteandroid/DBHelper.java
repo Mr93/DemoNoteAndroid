@@ -1,15 +1,11 @@
 package com.example.prora.demonoteandroid;
 
-import android.app.Application;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
-import com.example.prora.demonoteandroid.MPVEditNote.ModelEditNote;
-import com.example.prora.demonoteandroid.MVPDisplayNoteList.Note;
 
 import java.util.ArrayList;
 

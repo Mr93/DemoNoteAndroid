@@ -4,19 +4,14 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.prora.demonoteandroid.MVPDisplayNoteList.Note;
-import com.google.android.gms.drive.DriveApi;
-import com.google.android.gms.drive.DriveContents;
+import com.example.prora.demonoteandroid.Note;
 import com.google.android.gms.drive.DriveFile;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 
 import static com.example.prora.demonoteandroid.Constant.KEY_NOTE_CONTENT;
 import static com.example.prora.demonoteandroid.Constant.KEY_NOTE_ID;

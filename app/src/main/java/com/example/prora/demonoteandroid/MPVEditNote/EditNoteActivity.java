@@ -1,6 +1,5 @@
 package com.example.prora.demonoteandroid.MPVEditNote;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +12,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.prora.demonoteandroid.MVPDisplayNoteList.Note;
+import com.example.prora.demonoteandroid.Note;
 import com.example.prora.demonoteandroid.R;
 import com.example.prora.demonoteandroid.SettingsUtils;
 import com.example.prora.demonoteandroid.StateMaintainer;

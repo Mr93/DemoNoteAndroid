@@ -2,7 +2,7 @@ package com.example.prora.demonoteandroid.MPVEditNote;
 
 import android.content.Context;
 
-import com.example.prora.demonoteandroid.MVPDisplayNoteList.Note;
+import com.example.prora.demonoteandroid.Note;
 
 /**
  * Created by prora on 3/8/2017.

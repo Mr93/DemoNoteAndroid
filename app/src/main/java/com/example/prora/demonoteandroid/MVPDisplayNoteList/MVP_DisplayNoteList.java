@@ -3,6 +3,8 @@ package com.example.prora.demonoteandroid.MVPDisplayNoteList;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 
+import com.example.prora.demonoteandroid.Note;
+
 import java.util.ArrayList;
 
 /**

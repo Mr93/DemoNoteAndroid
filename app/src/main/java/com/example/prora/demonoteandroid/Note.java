@@ -1,4 +1,4 @@
-package com.example.prora.demonoteandroid.MVPDisplayNoteList;
+package com.example.prora.demonoteandroid;
 
 /**
  * Created by prora on 3/9/2017.
