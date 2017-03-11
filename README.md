@@ -18,3 +18,4 @@ Basic technical applied:
 + Recyclerview
 
 Some demo pictures:
+[[https://github.com/Mr93/DemoNoteAndroid/blob/develop/device-2017-03-11-162856.png]]
