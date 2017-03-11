@@ -9,6 +9,7 @@ import com.google.android.gms.drive.DriveApi;
 import com.google.android.gms.drive.DriveContents;
 import com.google.android.gms.drive.DriveFile;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,6 +17,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+
+import static com.example.prora.demonoteandroid.Constant.KEY_NOTE_CONTENT;
+import static com.example.prora.demonoteandroid.Constant.KEY_NOTE_ID;
 
 
 /**
@@ -34,20 +38,22 @@ public class EditContentDrive extends ApiClientAsyncTask<DriveFile, Void, Boolea
 		this.noteUpload = note;
 	}
 
-
 	@Override
 	protected Boolean doInBackgroundConnected(DriveFile... params) {
 		DriveFile file = params[0];
 		try {
-			String noteList = getNoteListJson(file);
+			String noteList = GoogleDriveHelper.getInstance(context).getNoteListJson(file);
 			if (noteList.equalsIgnoreCase("")){
 				return false;
 			}else {
-				JSONObject jsonObject = new JSONObject(noteList);
-				jsonObject.put(String.valueOf(noteUpload.noteId), noteUpload.noteContent);
-				Log.d(TAG, "doInBackgroundConnected: " + noteList);
-				Log.d(TAG, "doInBackgroundConnected: " + jsonObject.toString());
-				return handleWriteToDrive(file, jsonObject.toString());
+				JSONArray jsonArray = new JSONArray(noteList);
+				boolean isNewNote = true;
+				isNewNote = handleOldNote(jsonArray, isNewNote);
+				if(isNewNote){
+					handleNewNote(jsonArray);
+				}
+				Log.d(TAG, "doInBackgroundConnected: " + jsonArray.toString());
+				return GoogleDriveHelper.getInstance(context).handleWriteToDrive(file, jsonArray.toString());
 			}
 		} catch (IOException e) {
 			Log.e(TAG, "IOException while appending to the output stream", e);
@@ -57,40 +63,21 @@ public class EditContentDrive extends ApiClientAsyncTask<DriveFile, Void, Boolea
 		return false;
 	}
 
-	private String getNoteListJson(DriveFile file){
-		String contentsAsString = "";
-		try {
-			DriveApi.DriveContentsResult driveContentsResult = file.open(
-					getGoogleApiClient(), DriveFile.MODE_READ_ONLY , null).await();
-			if (!driveContentsResult.getStatus().isSuccess()) {
-				return contentsAsString;
+	private boolean handleOldNote(JSONArray jsonArray, boolean isNewNote) throws JSONException {
+		for (int i = 0; i < jsonArray.length(); i++){
+			if(jsonArray.getJSONObject(i).getInt(KEY_NOTE_ID) == noteUpload.noteId){
+				jsonArray.getJSONObject(i).put(KEY_NOTE_CONTENT, noteUpload.noteContent);
+				isNewNote = false;
 			}
-			DriveContents contents = driveContentsResult.getDriveContents();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(contents.getInputStream()));
-			StringBuilder builder = new StringBuilder();
-			String line;
-			while ((line = reader.readLine()) != null) {
-				builder.append(line);
-			}
-			 contentsAsString = builder.toString();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
-		return contentsAsString;
+		return isNewNote;
 	}
 
-	private boolean handleWriteToDrive(DriveFile file, String stringJson) throws IOException {
-		DriveApi.DriveContentsResult driveContentsResult = file.open(
-				getGoogleApiClient(), DriveFile.MODE_WRITE_ONLY, null).await();
-		if (!driveContentsResult.getStatus().isSuccess()) {
-			return false;
-		}
-		DriveContents driveContents = driveContentsResult.getDriveContents();
-		OutputStream outputStream = driveContents.getOutputStream();
-		outputStream.write(stringJson.getBytes());
-		com.google.android.gms.common.api.Status status =
-				driveContents.commit(getGoogleApiClient(), null).await();
-		return status.getStatus().isSuccess();
+	private void handleNewNote(JSONArray jsonArray) throws JSONException {
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put(KEY_NOTE_ID, noteUpload.noteId);
+		jsonObject.put(KEY_NOTE_CONTENT, noteUpload.noteContent);
+		jsonArray.put(jsonObject);
 	}
 
 	@Override

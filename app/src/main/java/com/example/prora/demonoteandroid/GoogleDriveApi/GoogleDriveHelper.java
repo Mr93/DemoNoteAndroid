@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.prora.demonoteandroid.MVPDisplayNoteList.MVP_DisplayNoteList;
 import com.example.prora.demonoteandroid.MVPDisplayNoteList.Note;
 import com.example.prora.demonoteandroid.SettingsUtils;
 import com.google.android.gms.common.ConnectionResult;
@@ -19,19 +20,25 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveApi;
+import com.google.android.gms.drive.DriveContents;
 import com.google.android.gms.drive.DriveFile;
 import com.google.android.gms.drive.DriveFolder;
 import com.google.android.gms.drive.DriveId;
 import com.google.android.gms.drive.MetadataChangeSet;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
+import static com.example.prora.demonoteandroid.Constant.KEY_NOTE_CONTENT;
+import static com.example.prora.demonoteandroid.Constant.KEY_NOTE_ID;
 import static com.example.prora.demonoteandroid.Constant.KEY_SETTING_ROOT_FILE_DRIVE_ID;
 import static com.example.prora.demonoteandroid.Constant.REQUEST_CODE_CREATOR;
 import static com.example.prora.demonoteandroid.Constant.RESOLVE_CONNECTION_REQUEST_CODE;
@@ -134,13 +141,15 @@ public class GoogleDriveHelper implements GoogleApiClient.ConnectionCallbacks, G
 						}
 
 						private void writeContent() {
-							// write content to DriveContents
 							OutputStream outputStream = result.getDriveContents().getOutputStream();
 							Writer writer = new OutputStreamWriter(outputStream);
 							try {
+								JSONArray jsonArray = new JSONArray();
 								JSONObject jsonObject = new JSONObject();
-								jsonObject.put(String.valueOf(noteUpload.noteId), noteUpload.noteContent);
-								writer.write(jsonObject.toString());
+								jsonObject.put(KEY_NOTE_ID, noteUpload.noteId);
+								jsonObject.put(KEY_NOTE_CONTENT, noteUpload.noteContent);
+								jsonArray.put(jsonObject);
+								writer.write(jsonArray.toString());
 								writer.close();
 							} catch (IOException e) {
 								Log.e(TAG, e.getMessage());
@@ -170,5 +179,47 @@ public class GoogleDriveHelper implements GoogleApiClient.ConnectionCallbacks, G
 		DriveId driveId = DriveId.decodeFromString(SettingsUtils.getInstances().getStringSharedPreferences(KEY_SETTING_ROOT_FILE_DRIVE_ID));
 		DriveFile driveFile = driveId.asDriveFile();
 		new EditContentDrive(context, note).execute(driveFile);
+	}
+
+	public void downloadNoteListFromDrive(MVP_DisplayNoteList.ProvidedModel model){
+		DriveId driveId = DriveId.decodeFromString(SettingsUtils.getInstances().getStringSharedPreferences(KEY_SETTING_ROOT_FILE_DRIVE_ID));
+		DriveFile driveFile = driveId.asDriveFile();
+		new GetNoteListFromDrive(context, model).execute(driveFile);
+	}
+
+	public String getNoteListJson(DriveFile file){
+		String contentsAsString = "";
+		try {
+			DriveApi.DriveContentsResult driveContentsResult = file.open(
+					getGoogleApiClient(), DriveFile.MODE_READ_ONLY , null).await();
+			if (!driveContentsResult.getStatus().isSuccess()) {
+				return contentsAsString;
+			}
+			DriveContents contents = driveContentsResult.getDriveContents();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(contents.getInputStream()));
+			StringBuilder builder = new StringBuilder();
+			String line;
+			while ((line = reader.readLine()) != null) {
+				builder.append(line);
+			}
+			contentsAsString = builder.toString();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return contentsAsString;
+	}
+
+	public boolean handleWriteToDrive(DriveFile file, String stringJson) throws IOException {
+		DriveApi.DriveContentsResult driveContentsResult = file.open(
+				getGoogleApiClient(), DriveFile.MODE_WRITE_ONLY, null).await();
+		if (!driveContentsResult.getStatus().isSuccess()) {
+			return false;
+		}
+		DriveContents driveContents = driveContentsResult.getDriveContents();
+		OutputStream outputStream = driveContents.getOutputStream();
+		outputStream.write(stringJson.getBytes());
+		com.google.android.gms.common.api.Status status =
+				driveContents.commit(getGoogleApiClient(), null).await();
+		return status.getStatus().isSuccess();
 	}
 }

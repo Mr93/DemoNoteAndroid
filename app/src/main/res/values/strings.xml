@@ -2,4 +2,6 @@
     <string name="app_name">Demo Note Android</string>
     <string name="action_settings">Settings</string>
     <string name="save">Save</string>
+    <string name="upload">Upload</string>
+    <string name="download">Download</string>
 </resources>

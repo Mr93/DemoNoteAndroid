@@ -59,6 +59,14 @@ public class DBHelper extends SQLiteOpenHelper {
 		return (int) sqLiteDatabase.insert(NOTE_TABLE_NAME, null, contentValues);
 	}
 
+	public synchronized int insertNoteWithId (String content, int id){
+		SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+		ContentValues contentValues = new ContentValues();
+		contentValues.put(NOTE_COLUMN_ID, id);
+		contentValues.put(NOTE_COLUMN_CONTENT, content);
+		return (int) sqLiteDatabase.insert(NOTE_TABLE_NAME, null, contentValues);
+	}
+
 	public synchronized int updateNote(String content, int id){
 		SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
 		ContentValues contentValues = new ContentValues();

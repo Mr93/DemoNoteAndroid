@@ -1,19 +1,12 @@
 package com.example.prora.demonoteandroid.MVPDisplayNoteList;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.Toast;
-
-import com.example.prora.demonoteandroid.MPVEditNote.EditNoteActivity;
-import com.example.prora.demonoteandroid.MPVEditNote.ModelEditNote;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,6 +80,11 @@ public class PresenterDisplayNoteList implements MVP_DisplayNoteList.ProvidedPre
 	}
 
 	@Override
+	public void getNoteListFromDrive() {
+		model.fetchNoteListFromDrive();
+	}
+
+	@Override
 	public Context getContext() {
 		return view.getViewContext();
 	}
@@ -97,6 +95,8 @@ public class PresenterDisplayNoteList implements MVP_DisplayNoteList.ProvidedPre
 			this.noteListContent.clear();
 			this.noteListContent.addAll(noteListContent);
 			noteListAdapter.notifyDataSetChanged();
+			Toast.makeText(getContext(), "Update data success", Toast.LENGTH_SHORT).show();
 		}
 	}
+
 }
